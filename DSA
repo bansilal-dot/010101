@@ -1,0 +1,553 @@
+---------------------------------------------------------------
+Practical 6:  Find out maximum and minimum marks obtained in that subject.
+Use heap data structure.
+
+#include <iostream>
+#include <queue>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n;
+    cout << "Enter the number of students: ";
+    cin >> n;
+
+    priority_queue<int> maxHeap;
+    priority_queue<int, vector<int>, greater<int>> minHeap;
+
+    cout << "Enter the marks of students: ";
+
+    for (int i = 0; i < n; ++i) {
+        int mark;
+        cin >> mark;
+        maxHeap.push(mark);
+        minHeap.push(mark);
+    }
+
+    int maxMarks = maxHeap.top();
+    int minMarks = minHeap.top();
+
+    cout << "Maximum marks obtained: " << maxMarks << endl;
+    cout << "Minimum marks obtained: " << minMarks << endl;
+
+    return 0;
+}
+---------------------------------------------------------------
+Practical 7: Make use of two collision handling techniques and compare them
+using number of comparisons required to find a set of telephone numbers
+
+#include <iostream>
+#include <list>
+#include <vector>
+using namespace std;
+
+const int TABLE_SIZE = 10;
+
+struct Client {
+    string clientName;
+    string clientPhoneNumber;
+};
+
+int hashFunction(string clientName, int tableSize) {
+    int hash = 0;
+    for (char c : clientName) {
+        hash += c;
+    }
+    return hash % tableSize;
+}
+
+class HashTableChaining {
+private:
+    vector<list<pair<string, string>>> hashTable;
+
+public:
+    HashTableChaining() {
+        hashTable.resize(TABLE_SIZE);
+    }
+
+    void insert(string clientName, string clientPhoneNumber) {
+        int index = hashFunction(clientName, TABLE_SIZE);
+        hashTable[index].push_back(make_pair(clientName, clientPhoneNumber));
+    }
+
+    string search(string clientName, int& comparisons) {
+        int index = hashFunction(clientName, TABLE_SIZE);
+        for (auto &entry : hashTable[index]) {
+            comparisons++;
+            if (entry.first == clientName) {
+                return entry.second;
+            }
+        }
+        return "Not found";
+    }
+};
+
+class HashTableLinearProbing {
+private:
+    vector<pair<string, string>> hashTable;
+    vector<bool> isSlotOccupied;
+
+public:
+    HashTableLinearProbing() {
+        hashTable.resize(TABLE_SIZE, {"", ""});
+        isSlotOccupied.resize(TABLE_SIZE, false);
+    }
+
+    void insert(string clientName, string clientPhoneNumber) {
+        int index = hashFunction(clientName, TABLE_SIZE);
+        while (isSlotOccupied[index]) {
+            index = (index + 1) % TABLE_SIZE;
+        }
+        hashTable[index] = make_pair(clientName, clientPhoneNumber);
+        isSlotOccupied[index] = true;
+    }
+
+    string search(string clientName, int& comparisons) {
+        int index = hashFunction(clientName, TABLE_SIZE);
+        int startIndex = index;
+
+        while (isSlotOccupied[index]) {
+            comparisons++;
+            if (hashTable[index].first == clientName) {
+                return hashTable[index].second;
+            }
+            index = (index + 1) % TABLE_SIZE;
+            if (index == startIndex) {
+                break;
+            }
+        }
+        return "Not found";
+    }
+};
+
+void compareCollisionHandling() {
+    HashTableChaining chainingTable;
+    HashTableLinearProbing probingTable;
+
+    vector<Client> clients = {{"Viraj", "12345"}, {"Atharva", "23456"}, {"sarth", "34567"}, {"Rujuta", "45678"}, {"Janhavi", "56789"}};
+
+    for (const auto& client : clients) {
+        chainingTable.insert(client.clientName, client.clientPhoneNumber);
+        probingTable.insert(client.clientName, client.clientPhoneNumber);
+    }
+
+    vector<string> searchNames = {"Viraj", "Atharva", "sarth", "rujuta", "Pauline", "Unknown"};
+    cout << "Comparing Separate Chaining and Linear Probing:\n";
+
+    for (const auto& name : searchNames) {
+        int comparisonsChaining = 0, comparisonsProbing = 0;
+
+        string phoneChaining = chainingTable.search(name, comparisonsChaining);
+        string phoneProbing = probingTable.search(name, comparisonsProbing);
+
+        cout << "Searching for: " << name << "\n";
+        cout << "Separate Chaining - Phone: " << phoneChaining << ", Comparisons: " << comparisonsChaining << "\n";
+        cout << "Linear Probing - Phone: " << phoneProbing << ", Comparisons: " << comparisonsProbing << "\n";
+        cout << "----------------------\n";
+    }
+}
+
+int main() {
+    compareCollisionHandling();
+    return 0;
+}
+---------------------------------------------------------------
+practical 8: A. Read the Credits obtained to students in different club activities and sort the credits
+using merge sort.
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void merge(vector<int>& credits, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    vector<int> L(n1);
+    vector<int> R(n2);
+
+    for (int i = 0; i < n1; ++i)
+        L[i] = credits[left + i];
+    for (int j = 0; j < n2; ++j)
+        R[j] = credits[mid + 1 + j];
+
+    int i = 0, j = 0, k = left;
+
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            credits[k] = L[i];
+            i++;
+        } else {
+            credits[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        credits[k] = L[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        credits[k] = R[j];
+        j++;
+        k++;
+    }
+}
+void mergeSort(vector<int>& credits, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+
+        mergeSort(credits, left, mid);
+        mergeSort(credits, mid + 1, right);
+
+        merge(credits, left, mid, right);
+    }
+}
+
+void printCredits(const vector<int>& credits) {
+    for (int credit : credits)
+        cout << credit << " ";
+    cout << endl;
+}
+
+int main() {
+    vector<int> credits = {4, 10, 2, 8, 6, 7};
+    cout << "Original credits: ";
+    printCredits(credits);
+
+    mergeSort(credits, 0, credits.size() - 1);
+
+    cout << "Sorted credits: ";
+    printCredits(credits);
+
+    return 0;
+}
+----------------------------------------------------------------------------
+practical 8 B:. Implement quick sort for sorting students credits they received in last 2 years and
+display the names of top 3 students
+
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+struct Student {
+    string name;
+    int credits;
+};
+
+int partition(vector<Student> &students, int low, int high) {
+    int pivot = students[high].credits;
+    int i = low - 1;
+
+    for (int j = low; j < high; j++) {
+        if (students[j].credits > pivot) { // Sorting in descending order
+            i++;
+            swap(students[i], students[j]);
+        }
+    }
+    swap(students[i + 1], students[high]);
+    return i + 1;
+}
+
+void quickSort(vector<Student> &students, int low, int high) {
+    if (low < high) {
+        int pi = partition(students, low, high);
+        quickSort(students, low, pi - 1);
+        quickSort(students, pi + 1, high);
+    }
+}
+
+int main() {
+    int n;
+    cout << "Enter the number of students: ";
+    cin >> n;
+
+    vector<Student> students(n);
+    for (int i = 0; i < n; i++) {
+        cout << "Enter the name of student " << i + 1 << ": ";
+        cin >> students[i].name;
+        cout << "Enter the credits received by " << students[i].name << " in the last 2 years: ";
+        cin >> students[i].credits;
+    }
+
+    quickSort(students, 0, n - 1);
+
+    cout << "Top 3 students based on credits:" << endl;
+    for (int i = 0; i < min(3, n); i++) {
+        cout << students[i].name << " with " << students[i].credits << " credits" << endl;
+    }
+
+    return 0;
+}
+---------------------------------------------------------------
+practical 9: A Given a set of items with weights and values, and a knapsack capacity, find the maximum total
+value that can be obtained by selecting fractions of items using the Greedy strategy.....
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+struct Item {
+    double weight;
+    double value;
+
+    Item(double w, double v) : weight(w), value(v) {}
+};
+
+bool compare(Item a, Item b) {
+    return (a.value / a.weight) > (b.value / b.weight);
+}
+
+double fractionalKnapsack(vector<Item> &items, double capacity) {
+    sort(items.begin(), items.end(), compare); 
+    double totalValue = 0.0;
+
+    for (auto &item : items) {
+        if (capacity >= item.weight) {
+            capacity -= item.weight;
+            totalValue += item.value;
+        } else {
+            totalValue += item.value * (capacity / item.weight); 
+            break; 
+        }
+    }
+
+    return totalValue;
+}
+
+int main() {
+    int n;
+    double capacity;
+
+    cout << "Enter the number of items: ";
+    cin >> n;
+
+    vector<Item> items;
+
+    for (int i = 0; i < n; i++) {
+        double weight, value;
+        cout << "Enter weight and value of item " << i + 1 << ": ";
+        cin >> weight >> value;
+        items.emplace_back(weight, value);
+    }
+
+    cout << "Enter the knapsack capacity: ";
+    cin >> capacity;
+
+    double maxValue = fractionalKnapsack(items, capacity);
+    cout << "Maximum total value in the knapsack: " << maxValue << endl;
+
+    return 0;
+}
+---------------------------------------------------------------
+
+practical 9 B: There are 5 jobs, each with a deadline and associated profit. The Select a subset of jobs that
+maximize the total profit while ensuring that each selected job is completed within its deadline.
+Display the selected jobs with their deadlines.
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+struct Job {
+    char id;        // Job ID
+    int deadline;   // Deadline for the job
+    int profit;     // Profit for the job
+};
+
+bool compare(Job a, Job b) {
+    return a.profit > b.profit; // Sort jobs by profit in descending order
+}
+
+void jobScheduling(vector<Job> &jobs, int n) {
+    sort(jobs.begin(), jobs.end(), compare); // Sort jobs by profit
+
+    vector<int> result(n, -1); // To store the job sequence (-1 indicates empty)
+    vector<bool> slot(n, false); // To mark if a slot is filled
+
+    int maxProfit = 0;
+
+    for (int i = 0; i < jobs.size(); i++) {
+        for (int j = min(jobs[i].deadline - 1, n - 1); j >= 0; j--) {
+            if (!slot[j]) { // If the slot is free
+                result[j] = i;
+                slot[j] = true;
+                maxProfit += jobs[i].profit;
+                break;
+            }
+        }
+    }
+
+    cout << "Selected jobs and their deadlines:\n";
+    for (int i = 0; i < n; i++) {
+        if (result[i] != -1) {
+            cout << "Job " << jobs[result[i]].id 
+                 << " with Deadline " << jobs[result[i]].deadline 
+                 << " and Profit " << jobs[result[i]].profit << endl;
+        }
+    }
+
+    cout << "Maximum Profit: " << maxProfit << endl;
+}
+
+int main() {
+    int n = 5; // Number of jobs
+    vector<Job> jobs = {
+        {'A', 2, 100},
+        {'B', 1, 19},
+        {'C', 2, 27},
+        {'D', 1, 25},
+        {'E', 3, 15}
+    };
+
+    cout << "Enter the maximum number of time slots: ";
+    int timeSlots;
+    cin >> timeSlots;
+
+    jobScheduling(jobs, timeSlots);
+
+    return 0;
+}
+---------------------------------------------------------------
+Practical 9 C:  Given a 2D matrix tsp[][], where each row has the array of distances from that indexed city to all
+the other cities and -1 denotes that there doesn’t exist a path between those two indexed cities. The
+task is to print minimum cost in TSP cycle.
+Input:
+tsp[][] = {{-1, 10, 15, 20}, -
+{10, -1, 35, 25},
+{15, 35, -1, 30},
+{20, 25, 30, -1}};
+
+
+#include <iostream>
+#include <vector>
+#include <climits>
+using namespace std;
+
+const int INF = INT_MAX;
+
+int tsp(const vector<vector<int>>& graph, int mask, int pos, vector<vector<int>>& dp, int n) {
+    if (mask == (1 << n) - 1) {
+        return graph[pos][0] == -1 ? INF : graph[pos][0]; // Return to the starting city
+    }
+
+    if (dp[mask][pos] != -1) {
+        return dp[mask][pos];
+    }
+
+    int minCost = INF;
+
+    for (int city = 0; city < n; city++) {
+        if (city != pos && (mask & (1 << city)) == 0 && graph[pos][city] != -1) {
+            int cost = graph[pos][city] + tsp(graph, mask | (1 << city), city, dp, n);
+            minCost = min(minCost, cost);
+        }
+    }
+
+    dp[mask][pos] = minCost;
+    return minCost;
+}
+
+int main() {
+    vector<vector<int>> tsp = {
+        {-1, 10, 15, 20},
+        {10, -1, 35, 25},
+        {15, 35, -1, 30},
+        {20, 25, 30, -1}
+    };
+
+    int n = tsp.size();
+    vector<vector<int>> dp(1 << n, vector<int>(n, -1));
+
+    int result = tsp(tsp, 1, 0, dp, n);
+
+    if (result == INF) {
+        cout << "No valid TSP cycle exists." << endl;
+    } else {
+        cout << "The minimum cost in TSP cycle is: " << result << endl;
+    }
+
+    return 0;
+}
+
+_____________________________________________________________________________
+
+practical 10: N Queen
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+bool isSafe(vector<vector<int>> &board, int row, int col, int n) {
+    for (int i = 0; i < row; i++)
+        if (board[i][col])
+            return false;
+
+    for (int i = row, j = col; i >= 0 && j >= 0; i--, j--)
+        if (board[i][j])
+            return false;
+
+    for (int i = row, j = col; i >= 0 && j < n; i--, j++)
+        if (board[i][j])
+            return false;
+
+    return true;
+}
+
+bool solveNQUtil(vector<vector<int>> &board, int row, int n) {
+    if (row >= n)
+        return true;
+
+    for (int col = 0; col < n; col++) {
+        if (isSafe(board, row, col, n)) {
+            board[row][col] = 1;
+            if (solveNQUtil(board, row + 1, n))
+                return true;
+            board[row][col] = 0;
+        }
+    }
+
+    return false;
+}
+
+void solveNQ(int n) {
+    vector<vector<int>> board(n, vector<int>(n, 0));
+    if (solveNQUtil(board, 0, n)) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++)
+                cout << board[i][j] << " ";
+            cout << endl;
+        }
+    } else {
+        cout << "Solution does not exist" << endl;
+    }
+}
+
+int main() {
+    int n;
+    cout << "Enter the size of the board: ";
+    cin >> n;
+    solveNQ(n);
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
