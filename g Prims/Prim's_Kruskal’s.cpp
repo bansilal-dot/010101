@@ -3,22 +3,21 @@
 #include <queue>
 #include <algorithm>
 #include <numeric>
-#include <climits> // For INT_MAX
+#include <climits> 
 
 using namespace std;
 
-// Union-Find (Disjoint Set) for Kruskal's Algorithm
 class UnionFind {
 public:
     UnionFind(int n) {
         parent.resize(n);
         rank.resize(n, 0);
-        iota(parent.begin(), parent.end(), 0); // Initialize parent to self
+        iota(parent.begin(), parent.end(), 0); 
     }
 
     int find(int x) {
         if (parent[x] != x)
-            parent[x] = find(parent[x]); // Path compression
+            parent[x] = find(parent[x]);
         return parent[x];
     }
 
@@ -27,7 +26,6 @@ public:
         int rootY = find(y);
         
         if (rootX != rootY) {
-            // Union by rank
             if (rank[rootX] > rank[rootY]) {
                 parent[rootY] = rootX;
             } else if (rank[rootX] < rank[rootY]) {
@@ -43,22 +41,20 @@ private:
     vector<int> parent, rank;
 };
 
-// Structure to represent an edge
 struct Edge {
     int u, v, weight;
     bool operator<(const Edge &e) const {
-        return weight < e.weight; // Sort edges by weight
+        return weight < e.weight; 
     }
 };
 
-// Function for Prim's Algorithm
 int prim(int n, vector<vector<pair<int, int>>>& adj, vector<pair<int, int>>& mstEdges) {
-    vector<int> key(n, INT_MAX); // Key values to pick minimum weight edge
-    vector<bool> inMST(n, false); // Track nodes included in MST
+    vector<int> key(n, INT_MAX);
+    vector<bool> inMST(n, false); 
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
 
     key[0] = 0;
-    pq.push({0, 0}); // Start from node 0
+    pq.push({0, 0}); 
 
     int totalWeight = 0;
 
@@ -77,7 +73,7 @@ int prim(int n, vector<vector<pair<int, int>>>& adj, vector<pair<int, int>>& mst
             if (!inMST[v] && weight < key[v]) {
                 key[v] = weight;
                 pq.push({key[v], v});
-                mstEdges.push_back({u, v}); // Store MST edge
+                mstEdges.push_back({u, v});
             }
         }
     }
@@ -85,10 +81,9 @@ int prim(int n, vector<vector<pair<int, int>>>& adj, vector<pair<int, int>>& mst
     return totalWeight;
 }
 
-// Function for Kruskal's Algorithm
 int kruskal(int n, vector<Edge>& edges, vector<pair<int, int>>& mstEdges) {
     UnionFind uf(n);
-    sort(edges.begin(), edges.end()); // Sort edges by weight
+    sort(edges.begin(), edges.end()); 
 
     int totalWeight = 0;
     for (const auto& edge : edges) {
@@ -104,7 +99,7 @@ int kruskal(int n, vector<Edge>& edges, vector<pair<int, int>>& mstEdges) {
 }
 
 int main() {
-    int n, m; // Number of nodes and edges
+    int n, m; 
     cout << "Enter number of nodes and edges: ";
     cin >> n >> m;
 
@@ -115,13 +110,12 @@ int main() {
     for (int i = 0; i < m; ++i) {
         int u, v, weight;
         cin >> u >> v >> weight;
-        u--; v--; // Adjust to 0-based index
+        u--; v--;
         adj[u].push_back({v, weight});
         adj[v].push_back({u, weight});
         edges.push_back({u, v, weight});
     }
 
-    // Prim's Algorithm
     vector<pair<int, int>> mstEdgesPrim;
     int totalWeightPrim = prim(n, adj, mstEdgesPrim);
 
@@ -131,7 +125,6 @@ int main() {
         cout << edge.first + 1 << " - " << edge.second + 1 << endl;
     }
 
-    // Kruskal's Algorithm
     vector<pair<int, int>> mstEdgesKruskal;
     int totalWeightKruskal = kruskal(n, edges, mstEdgesKruskal);
 
