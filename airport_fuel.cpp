@@ -5,28 +5,24 @@ using namespace std;
 
 class Graph {
 public:
-    int V; // Number of vertices (cities)
-    vector<vector<int>> adjMatrix; // Adjacency matrix
-
-    Graph(int V); // Constructor
-    void addEdge(int u, int v, int weight); // Function to add an edge
-    bool isConnected(); // Function to check if the graph is connected
-    void BFS(int start, vector<bool>& visited); // BFS to check connectivity
+    int V; 
+    vector<vector<int>> adjMatrix;
+    Graph(int V); 
+    void addEdge(int u, int v, int weight); 
+    bool isConnected(); 
+    void BFS(int start, vector<bool>& visited); 
 };
 
-// Constructor
 Graph::Graph(int V) {
     this->V = V;
-    adjMatrix.resize(V, vector<int>(V, -1)); // Initialize matrix with -1 (no direct flight)
+    adjMatrix.resize(V, vector<int>(V, -1)); 
 }
 
-// Function to add an edge to the graph
 void Graph::addEdge(int u, int v, int weight) {
-    adjMatrix[u][v] = weight; // Set the edge weight from u to v
-    adjMatrix[v][u] = weight; // Set the edge weight from v to u (undirected graph)
+    adjMatrix[u][v] = weight; 
+    adjMatrix[v][u] = weight; 
 }
 
-// Function to perform BFS traversal to check connectivity
 void Graph::BFS(int start, vector<bool>& visited) {
     queue<int> q;
     visited[start] = true;
@@ -36,9 +32,8 @@ void Graph::BFS(int start, vector<bool>& visited) {
         int node = q.front();
         q.pop();
 
-        // Visit all the adjacent vertices of the current node
         for (int i = 0; i < V; i++) {
-            if (adjMatrix[node][i] != -1 && !visited[i]) { // Check for an edge
+            if (adjMatrix[node][i] != -1 && !visited[i]) { 
                 visited[i] = true;
                 q.push(i);
             }
@@ -46,33 +41,29 @@ void Graph::BFS(int start, vector<bool>& visited) {
     }
 }
 
-// Function to check if the graph is connected
 bool Graph::isConnected() {
     vector<bool> visited(V, false);
 
-    // Perform BFS starting from vertex 0
     BFS(0, visited);
 
-    // Check if all vertices were visited
     for (int i = 0; i < V; i++) {
         if (!visited[i]) {
-            return false; // Not connected
+            return false; 
         }
     }
-    return true; // Connected
+    return true; 
 }
 
-// Main function
 int main() {
     int n, e;
     cout << "Enter the number of cities (vertices): ";
     cin >> n;
-    Graph g(n); // Create a graph with n cities
+    Graph g(n);
 
     cout << "Enter the number of flight paths (edges): ";
     cin >> e;
 
-    // Take input for edges (flight paths)
+   
     for (int i = 0; i < e; i++) {
         int u, v, weight;
         cout << "Enter the source city (0 to " << n-1 << "), destination city (0 to " << n-1 << "), and flight time/fuel cost: ";
@@ -80,7 +71,6 @@ int main() {
         g.addEdge(u, v, weight);
     }
 
-    // Check if the graph is connected
     if (g.isConnected()) {
         cout << "Graph is connected." << endl;
     } else {
