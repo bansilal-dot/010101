@@ -1,9 +1,9 @@
 #include <iostream>
 #include <stack>
-#include <cctype> // For isdigit()
+#include <cctype> 
 using namespace std;
 
-// Define a tree node
+
 struct TreeNode {
     char value;
     TreeNode* left;
@@ -11,16 +11,15 @@ struct TreeNode {
     TreeNode(char val) : value(val), left(nullptr), right(nullptr) {}
 };
 
-// Function to construct the expression tree from postfix
 TreeNode* constructExpressionTree(const string& postfix) {
     stack<TreeNode*> st;
 
     for (char ch : postfix) {
-        // If operand, create a node and push onto the stack
+
         if (isalnum(ch)) {
             st.push(new TreeNode(ch));
         }
-        // If operator, pop two nodes, create a new node, and push back onto stack
+      
         else {
             TreeNode* right = st.top(); st.pop();
             TreeNode* left = st.top(); st.pop();
@@ -30,11 +29,11 @@ TreeNode* constructExpressionTree(const string& postfix) {
             st.push(newNode);
         }
     }
-    // The remaining node in the stack is the root
+
     return st.top();
 }
 
-// Non-recursive inorder traversal
+
 void inorderTraversal(TreeNode* root) {
     stack<TreeNode*> st;
     TreeNode* current = root;
@@ -50,7 +49,6 @@ void inorderTraversal(TreeNode* root) {
     }
 }
 
-// Non-recursive pre-order traversal
 void preorderTraversal(TreeNode* root) {
     if (!root) return;
 
@@ -61,13 +59,11 @@ void preorderTraversal(TreeNode* root) {
         TreeNode* node = st.top(); st.pop();
         cout << node->value << " ";
 
-        // Push right child first, then left child
         if (node->right) st.push(node->right);
         if (node->left) st.push(node->left);
     }
 }
 
-// Non-recursive post-order traversal
 void postorderTraversal(TreeNode* root) {
     if (!root) return;
 
@@ -91,14 +87,12 @@ void postorderTraversal(TreeNode* root) {
 int main() {
     string postfix;
 
-    // Taking input from the user
+
     cout << "Enter a postfix expression: ";
     cin >> postfix;
 
-    // Construct the expression tree
     TreeNode* root = constructExpressionTree(postfix);
 
-    // Perform non-recursive traversals
     cout << "Non-recursive Inorder Traversal: ";
     inorderTraversal(root);
     cout << endl;
