@@ -7,59 +7,51 @@ using namespace std;
 
 class Graph {
 public:
-    // Number of nodes (cities)
+    
     int V;
-    
-    // Adjacency list representation
+
     vector<vector<pair<int, int>>> adj;
-    
-    // Constructor
+
     Graph(int V) {
         this->V = V;
         adj.resize(V);
     }
-    
-    // Function to add an edge between nodes u and v with a weight
+ 
     void addEdge(int u, int v, int weight) {
         adj[u].push_back({v, weight});
         adj[v].push_back({u, weight});
     }
-    
-    // Dijkstra's algorithm to find the shortest path from source s
+
     void dijkstra(int s, int destination) {
-        vector<int> dist(V, INT_MAX); // Distance array to store shortest distance from source
-        vector<int> pred(V, -1);      // Predecessor array to reconstruct the path
-        dist[s] = 0; // Distance from source to itself is 0
+        vector<int> dist(V, INT_MAX); 
+        vector<int> pred(V, -1);     
+        dist[s] = 0; 
         
-        // Priority queue to store (distance, node)
+  
         priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-        pq.push({0, s}); // Start from source
+        pq.push({0, s}); 
         
         while (!pq.empty()) {
-            int u = pq.top().second; // Get the node with the shortest distance
+            int u = pq.top().second;
             pq.pop();
-            
-            // Explore the neighbors of u
+
             for (auto &neighbor : adj[u]) {
-                int v = neighbor.first;   // Neighbor node
-                int weight = neighbor.second;  // Edge weight
-                
-                // If a shorter path is found
+                int v = neighbor.first; 
+                int weight = neighbor.second;  
+
                 if (dist[u] + weight < dist[v]) {
                     dist[v] = dist[u] + weight;
-                    pred[v] = u;  // Store the predecessor to reconstruct the path
-                    pq.push({dist[v], v}); // Push the updated distance into the priority queue
+                    pred[v] = u;  
+                    pq.push({dist[v], v}); 
                 }
             }
         }
-        
-        // Print the shortest distance and path to the destination node only
+   
         if (dist[destination] == INT_MAX) {
             cout << "Destination city " << destination << " is unreachable from source." << endl;
         } else {
             cout << dist[destination] << endl;
-            
-            // Reconstruct and print the path
+
             cout << "Path: ";
             stack<int> path;
             for (int at = destination; at != -1; at = pred[at]) {
@@ -89,7 +81,7 @@ int main() {
     for (int i = 0; i < E; i++) {
         int u, v, weight;
         cin >> u >> v >> weight;
-        g.addEdge(u, v, weight);  // Add road between city u and city v with time weight
+        g.addEdge(u, v, weight); 
     }
     
     int source, destination;
@@ -99,7 +91,7 @@ int main() {
     cin >> destination;
     
     cout << "Shortest path from city " << source << " to city " << destination << " is:" << endl;
-    g.dijkstra(source, destination); // Run Dijkstra from source city
+    g.dijkstra(source, destination);
     
     return 0;
 }
