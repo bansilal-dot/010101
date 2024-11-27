@@ -1,7 +1,6 @@
 #include <iostream>
 using namespace std;
 
-// Node structure for the binary tree
 struct Node {
     int data;
     Node* left;
@@ -14,7 +13,6 @@ struct Node {
     }
 };
 
-// Function to insert a new node into the binary tree
 Node* insert(Node* root, int value) {
     if (root == nullptr) {
         return new Node(value);
@@ -29,7 +27,6 @@ Node* insert(Node* root, int value) {
     return root;
 }
 
-// Function to display the binary tree (in-order traversal)
 void display(Node* root) {
     if (root == nullptr) {
         return;
@@ -51,7 +48,6 @@ int findDepth(Node* root) {
     return max(leftDepth, rightDepth) + 1;
 }
 
-// Function to display leaf nodes
 void displayLeafNodes(Node* root) {
     if (root == nullptr) {
         return;
@@ -66,7 +62,6 @@ void displayLeafNodes(Node* root) {
     displayLeafNodes(root->right);
 }
 
-// Function to create a copy of a binary tree
 Node* copyTree(Node* root) {
     if (root == nullptr) {
         return nullptr;
@@ -79,7 +74,6 @@ Node* copyTree(Node* root) {
     return newNode;
 }
 
-// Main function
 int main() {
     Node* root = nullptr;
 
