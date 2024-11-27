@@ -51,23 +51,15 @@ Node* deleteNode(Node* root, int value) {
         } else if (root->right == nullptr) {
             Node* temp = root->left;
             delete root;
-
-
-
-
-
             return temp;
         }
 
-        // Node with two children
         Node* temp = findMin(root->right);
         root->data = temp->data;
         root->right = deleteNode(root->right, temp->data);
     }
     return root;
 }
-
-// Function to display the tree in-order (sorted order)
 void display(Node* root) {
     if (root == nullptr) {
         return;
@@ -77,7 +69,6 @@ void display(Node* root) {
     display(root->right);
 }
 
-// Function to search for a value in the BST
 bool search(Node* root, int value) {
     if (root == nullptr) {
         return false;
@@ -91,7 +82,6 @@ bool search(Node* root, int value) {
     }
 }
 
-// Function for Breadth-First Search (Level-wise print)
 void bfs(Node* root) {
     if (root == nullptr) {
         return;
@@ -114,7 +104,6 @@ void bfs(Node* root) {
     cout << endl;
 }
 
-// Main function
 int main() {
     Node* root = nullptr;
     int choice, value;
@@ -176,4 +165,3 @@ int main() {
     return 0;
 }
 
-//uses queue to keep track of visited  nodes
